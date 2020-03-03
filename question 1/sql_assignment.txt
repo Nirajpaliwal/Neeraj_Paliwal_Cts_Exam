@@ -1,0 +1,178 @@
+use assignment;
+Database changed
+1.create  table branch_master(branch_id varchar(6) primary key,branch_name varchar(30), branch_city varchar(30));
+Query OK, 0 rows affected (0.34 sec)
+
+2. create  table loan_detail(customer_number varchar(6) ,branch_id varchar(30), loan_amount int ,foreign key(branch_id) references branch_master(branch_id), foreign key (customer_number) references customer_master(customer_number));
+Query OK, 0 rows affected (0.09 sec)
+
+3.create  table customer_master(customer_number varchar(6) primary key,firstname varchar(30),middlename varchar(30),lastname varchar(30),customer_city varchar(15), customer_contact_number varchar(10), occupation varchar(20),customer_date_of_birth date );
+Query OK, 0 rows affected (0.11 sec)
+
+4.create  table account_master(account_number varchar(6) primary key,customer_number varchar(6),branch_id varchar(6),opening_balance int,account_opening_date date, customer_type varchar(10), account_status varchar(10),foreign key (customer_number) references customer_master(customer_number),foreign key(branch_id) references branch_master(branch_id));
+Query OK, 0 rows affected (0.14 sec)
+
+5.create  table transaction_details(transaction_number varchar(6) primary key ,account_number varchar(6),date_of_transaction date,medium_of_transaction varchar(20),transaction_type varchar(20),transaction_amount int,foreign key (account_number) references account_master(account_number));
+Query OK, 0 rows affected (0.13 sec
+
+
+mysql> insert into branch_master values('1001','hinjewadi','pune');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into branch_master values('1002','wakad','pune');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into branch_master values('1003','karve nagar','pune');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select * from branch_master;
++-----------+-------------+-------------+
+| branch_id | branch_name | branch_city |
++-----------+-------------+-------------+
+| 1001      | hinjewadi   | pune        |
+| 1002      | wakad       | pune        |
+| 1003      | karve nagar | pune        |
++-----------+-------------+-------------+
+3 rows in set (0.00 sec)
+
+
+insert into customer_master values("101","Pulkit","Alok","Maheshwari","Pune","9827211799","Designer","1997-07-13");
+insert into customer_master values("102","Archil","Ashish","Soni","Bhopal","8120019696","Coder","1993-01-28");
+
+insert into account_master values("9001","101","1001",2000,"2020-05-15","premium","active");
+insert into account_master values("9002","102","1002",2000,"2019-01-23","premium","deactive");
+
+insert into loan_detail values("101","1001",10000);
+insert into loan_detail values("102","1002",40000);
+
+insert into transaction_details values("4001","9001","2016-01-10" ,"net banking", "withdraw",100);
+insert into transaction_details values("4002","9002","2017-08-20" ,"net banking", "withdraw",200);
+
+mysql> select * from customer_master;
++-----------------+-----------+------------+------------+---------------+-------------------------+------------+------------------------+
+| customer_number | firstname | middlename | lastname   | customer_city | customer_contact_number | occupation | customer_date_of_birth |
++-----------------+-----------+------------+------------+---------------+-------------------------+------------+------------------------+
+| 101             | Pulkit    | Alok       | Maheshwari | Pune          | 9827211799              | Designer   | 1997-07-13             |
+| 102             | Archil    | Ashish     | Soni       | Bhopal        | 8120019696              | Coder      | 1993-01-28             |
++-----------------+-----------+------------+------------+---------------+-------------------------+------------+-------------
+mysql> select * from account_master;
++----------------+-----------------+-----------+-----------------+----------------------+---------------+----------------+
+| account_number | customer_number | branch_id | opening_balance | account_opening_date | customer_type | account_status |
++----------------+-----------------+-----------+-----------------+----------------------+---------------+----------------+
+| 9001           | 101             | 1001      |            2000 | 2020-05-15           | premium       | active         |
+| 9002           | 102             | 1002      |            2000 | 2019-01-23           | premium       | deactive       |
++----------------+-----------------+-----------+-----------------+----------------------+---------------+----------------+
+mysql> select * from loan_detail;
++-----------------+-----------+-------------+
+| customer_number | branch_id | loan_amount |
++-----------------+-----------+-------------+
+| 101             | 1001      |       10000 |
+| 102             | 1002      |       40000 |
++-----------------+-----------+-------------+
+2 rows in set (0.00 sec)
+mysql> select * from transaction_details;
++--------------------+----------------+---------------------+-----------------------+------------------+--------------------+
+| transaction_number | account_number | date_of_transaction | medium_of_transaction | transaction_type | transaction_amount |
++--------------------+----------------+---------------------+-----------------------+------------------+--------------------+
+| 4001               | 9001           | 2016-01-10          | net banking           | withdraw         |                100 |
+| 4002               | 9002           | 2017-08-20          | net banking           | withdraw         |                200 |
++--------------------+----------------+---------------------+-----------------------+------------------+--------------------+
+2 rows in set (0.00 sec)
+
+
+//Queries performed
+
+a)select a.account_number,c.customer_number,c.firstname,c.lastname,a.account_opening_date from account_master a,customer_master c where c.customer_number=a.customer_number order by account_number;
++----------------+-----------------+-----------+------------+----------------------+
+| account_number | customer_number | firstname | lastname   | account_opening_date |
++----------------+-----------------+-----------+------------+----------------------+
+| 9001           | 101             | Pulkit    | Maheshwari | 2020-05-15           |
+| 9002           | 102             | Archil    | Soni       | 2019-01-23           |
++----------------+-----------------+-----------+------------+----------------------+
+2 rows in set (0.00 sec)
+
+
+b)select count(*) as cust_count from customer_master where customer_city='Pune';
++------------+
+| cust_count |
++------------+
+|          1 |
++------------+
+1 row in set (0.00 sec)
+
+
+c)select a.customer_number,c.firstname,a.account_number from account_master a,customer_master c where a.customer_number=c.customer_number and day(account_opening_date)>15;
++-----------------+-----------+----------------+
+| customer_number | firstname | account_number |
++-----------------+-----------+----------------+
+| 102             | Archil    | 9002           |
++-----------------+-----------+----------------+
+1 row in set (0.00 sec)
+
+d)select a.customer_number,a.account_number,c.firstname from account_master a,customer_master c where a.customer_number=c.customer_number and account_status="active";
+ 
++-----------------+----------------+-----------+
+| customer_number | account_number | firstname |
++-----------------+----------------+-----------+
+| 101             | 9001           | Pulkit    |
++-----------------+----------------+-----------+
+1 row in set (0.00 sec)
+
+
+e)select transaction_type,count(*) as Trans_count from transaction_details t,account_master a where t.account_number=a.account_number and a.customer_number="101";
++------------------+-------------+
+| transaction_type | Trans_count |
++------------------+-------------+
+| withdraw         |           1 |
++------------------+-------------+
+1 row in set (0.00 sec)
+
+f) select count(*) as Count_Customer from customer_master where customer_number not in(select distinct customer_number from account_master);
++----------------+
+| Count_Customer |
++----------------+
+|              0 |
++----------------+
+1 row in set (0.02 sec)
+
+g)select distinct a.account_number,sum(t.transaction_amount)+a.opening_balance as Deposit_Amount from account_master a,transaction_details t where  t.account_number=a.account_number and transaction_type="deposit" group by account_number
+union
+select account_number,opening_balance from account_master where account_number not in
+(select account_number from transaction_details);
+
+h)select b.branch_city,count(*) from branch_master b,account_master a where b.branch_id=a.branch_id group by branch_city
+    -> union
+    -> select branch_city,0 from branch_master where branch_city not in
+    -> (select branch_city from branch_master b,account_master a where a.branch_id=b.branch_id group by branch_city)
+    -> union
+    -> select b.branch_id,count(*) from branch_master b,account_master a where a.branch_id=b.branch_id group by branch_id
+    -> union
+    -> select branch_id,0 from branch_master where branch_id not in
+    -> (select a.branch_id from branch_master b,account_master a where a.branch_id=b.branch_id group by branch_id);
++-------------+----------+
+| branch_city | count(*) |
++-------------+----------+
+| pune        |        2 |
+| 1001        |        1 |
+| 1002        |        1 |
+| 1003        |        0 |
++-------------+----------+
+4 rows in set (0.00 sec)
+
+i)select c.firstname from customer_master c,account_master a where a.customer_number=c.customer_number  group by c.firstname having count(*)>0 ;
++-----------+
+| firstname |
++-----------+
+| Archil    |
+| Pulkit    |
++-----------+
+2 rows in set (0.00 sec)
+
+j)select c.customer_number,c.firstname,c.customer_city,b.branch_city from branch_master b inner join customer_master c inner join account_master a
+    -> on a.customer_number=c.customer_number and a.branch_id=b.branch_id where b.branch_city<>c.customer_city;
++-----------------+-----------+---------------+-------------+
+| customer_number | firstname | customer_city | branch_city |
++-----------------+-----------+---------------+-------------+
+| 102             | Archil    | Bhopal        | pune        |
++-----------------+-----------+---------------+-------------+
+1 row in set (0.02 sec)
